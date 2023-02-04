@@ -117,6 +117,75 @@ impl Board {
         counter
     }
 
+    pub fn next_state_neumann(&self) -> Board {
+        let mut new_state = self.state.clone();
+        for (y, line) in self.state.iter().enumerate() {
+            for (x, cell) in line.iter().enumerate() {
+                let neighbors = self.calculate_num_neighbors_neumann(x, y);
+                if *cell {
+                    if neighbors < 2 || neighbors > 3 {
+                        new_state[y][x] = false;
+                    }
+                } else if neighbors == 3 {
+                    new_state[y][x] = true;
+                }
+            }
+        }
+
+        Board {
+            state: new_state,
+            width: self.width,
+            height: self.height,
+        }
+    }
+
+    pub fn calculate_num_neighbors_neumann(&self, x: usize, y: usize) -> u8 {
+        let left = x != 0;
+        let right = x < self.width - 1;
+        let up = y != 0;
+        let down = y < self.height - 1;
+        let more_left = left && x != 1;
+        let more_right = x < self.width - 2;
+        let more_up = up && y != 1;
+        let more_down = y < self.height - 2;
+
+        let mut counter = 0;
+
+        if left && self.state[y][x - 1] {
+            counter += 1;
+        }
+
+        if right && self.state[y][x + 1] {
+            counter += 1;
+        }
+
+        if up && self.state[y - 1][x] {
+            counter += 1;
+        }
+
+        if down && self.state[y + 1][x] {
+            counter += 1;
+        }
+
+        if more_left && self.state[y][x - 2] {
+            counter += 1;
+        }
+
+        if more_right && self.state[y][x + 2] {
+            counter += 1;
+        }
+
+        if more_up && self.state[y - 2][x] {
+            counter += 1;
+        }
+
+        if more_down && self.state[y + 2][x] {
+            counter += 1;
+        }
+
+        counter
+    }
+
     pub fn load_from_file(filename: &str) -> std::io::Result<Board> {
         let file = std::fs::read_to_string(filename)?;
         let state = file.lines().fold(Vec::new(), |mut vec, line: &str| {
