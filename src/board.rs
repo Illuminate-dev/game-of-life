@@ -116,6 +116,27 @@ impl Board {
 
         counter
     }
+
+    pub fn load_from_file(filename: &str) -> std::io::Result<Board> {
+        let file = std::fs::read_to_string(filename)?;
+        let state = file.lines().fold(Vec::new(), |mut vec, line: &str| {
+            vec.push(line.chars().fold(Vec::new(), |mut acc, i| {
+                if i == '0' {
+                    acc.push(false);
+                } else {
+                    acc.push(true);
+                }
+                acc
+            }));
+            vec
+        });
+
+        Ok(Board {
+            state,
+            width: file.lines().collect::<Vec<&str>>()[0].len(),
+            height: file.lines().collect::<Vec<&str>>().len(),
+        })
+    }
 }
 
 #[cfg(test)]
