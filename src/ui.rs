@@ -14,7 +14,7 @@ use tui::{
 };
 
 use crate::{
-    args::NeighborMethod,
+    args::GOLMethod,
     board::{self, Board},
     inputs::{events::Events, InputEvent, Key},
 };
@@ -113,10 +113,10 @@ fn process_key(key: Key) -> Return {
     Return::Continue
 }
 
-fn update(board: &mut Board, method: NeighborMethod) -> Return {
+fn update(board: &mut Board, method: GOLMethod) -> Return {
     let neighbor_function = match method {
-        NeighborMethod::Normal => board::Board::next_state,
-        NeighborMethod::VonNeumann => board::Board::next_state_neumann,
+        GOLMethod::Normal => board::Board::next_state,
+        GOLMethod::VonNeumann => board::Board::next_state_neumann,
     };
 
     *board = neighbor_function(board);

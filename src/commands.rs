@@ -1,4 +1,3 @@
-
 use clap::Parser;
 
 use crate::args::{Cli, SubCommands};
@@ -15,12 +14,11 @@ pub fn run() -> Result<(), GOLError> {
 }
 
 fn random(args: crate::args::Random) -> Result<(), GOLError> {
-
     let mut board = board::Board::random_state(args.width, args.height);
 
     let config = Config {
         sleep_time: args.sleep_time,
-        neighbor_method: args.neighbor_method,
+        neighbor_method: args.method,
     };
 
     crate::ui::start_ui(&mut board, config)
@@ -31,9 +29,8 @@ fn from_file(args: crate::args::File) -> Result<(), GOLError> {
 
     let config = Config {
         sleep_time: args.sleep_time,
-        neighbor_method: args.neighbor_method,
+        neighbor_method: args.method,
     };
 
     crate::ui::start_ui(&mut board, config)
 }
-
