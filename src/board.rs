@@ -5,8 +5,8 @@ type StateArray = Vec<Vec<bool>>;
 #[derive(Debug)]
 pub struct Board {
     state: StateArray,
-    width: usize,
-    height: usize,
+    pub width: usize,
+    pub height: usize,
 }
 
 impl Board {
@@ -139,7 +139,7 @@ impl Board {
         }
     }
 
-    pub fn calculate_num_neighbors_neumann(&self, x: usize, y: usize) -> u8 {
+    fn calculate_num_neighbors_neumann(&self, x: usize, y: usize) -> u8 {
         let left = x != 0;
         let right = x < self.width - 1;
         let up = y != 0;

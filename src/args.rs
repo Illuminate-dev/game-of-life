@@ -22,7 +22,7 @@ pub enum SubCommands {
     /// Create a grid randomly populated
     Random(Random),
     /// Use information from a file to populate a grid
-    FromFile(FromFile),
+    File(File),
 }
 
 #[derive(clap::Args, Debug)]
@@ -39,13 +39,13 @@ pub struct Random {
     #[arg(long, short, value_enum, default_value_t = NeighborMethod::Normal)]
     pub neighbor_method: NeighborMethod,
 
-    /// The time slept between the next state of the board
+    /// The time slept between the next state of the board (in milliseconds) WARNING: 0 does not work!
     #[arg(long, short, default_value_t = 200)]
     pub sleep_time: u64,
 }
 
 #[derive(clap::Args, Debug)]
-pub struct FromFile {
+pub struct File {
     /// File to load from
     pub filepath: PathBuf,
 
@@ -53,7 +53,7 @@ pub struct FromFile {
     #[arg(long, short, value_enum, default_value_t = NeighborMethod::Normal)]
     pub neighbor_method: NeighborMethod,
 
-    /// The time slept between the next state of the board
+    /// The time slept between the next state of the board (in milliseconds) WARNING: 0 does not work!
     #[arg(long, short, default_value_t = 200)]
     pub sleep_time: u64,
 }
