@@ -15,32 +15,29 @@ use tui::{
 
 use crate::{
     args::GOLMethod,
-    board::{self, Board},
+    boards::{self, Boards},
+    game::Game,
     inputs::{events::Events, InputEvent, Key},
 };
 
 use crate::GOLError;
 
-pub fn start_ui(board: &mut Board, config: super::Config) -> Result<(), GOLError> {
+pub fn start_ui(game: &mut Game, sleep_time: u64) -> Result<(), GOLError> {
     enable_raw_mode().unwrap();
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap();
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).unwrap();
 
-    let tick_rate = Duration::from_millis(if config.sleep_time < 10 {
-        10
-    } else {
-        config.sleep_time
-    });
+    let tick_rate = Duration::from_millis(if sleep_time < 10 { 10 } else { sleep_time });
     let events = Events::new(tick_rate);
 
     loop {
-        terminal.draw(|pg| draw(pg, &board)).unwrap();
+        terminal.draw(|pg| draw(pg, &game)).unwrap();
 
         let result = match events.next().unwrap_or(InputEvent::Tick) {
             InputEvent::Input(key) => process_key(key),
-            InputEvent::Tick => update(board, config.neighbor_method),
+            InputEvent::Tick => update(game),
         };
 
         if result == Return::Exit {
@@ -62,13 +59,13 @@ pub fn start_ui(board: &mut Board, config: super::Config) -> Result<(), GOLError
     Ok(())
 }
 
-fn draw<B>(item: &mut Frame<B>, board: &Board)
+fn draw<B>(item: &mut Frame<B>, game: &Game)
 where
     B: Backend,
 {
     let size = item.size();
 
-    check_size(&size, board);
+    check_size(&size, game);
 
     let title = draw_title();
 
@@ -77,7 +74,7 @@ where
         .constraints([Constraint::Length(3), Constraint::Min(10)].as_ref())
         .split(size);
 
-    let bod = draw_body(board);
+    let bod = draw_body(game);
 
     item.render_widget(title, chunks[0]);
 
@@ -96,8 +93,12 @@ fn draw_title<'a>() -> Paragraph<'a> {
         )
 }
 
-fn draw_body<'a>(board: &Board) -> Paragraph<'a> {
-    Paragraph::new(board.render()).alignment(Alignment::Center)
+fn draw_body<'a>(game: &Game) -> Paragraph<'a> {
+    match &game.board {
+        boards::Boards::AntBoard(ant) => Paragraph::new(ant.render()),
+        boards::Boards::GolBoard(gol) => Paragraph::new(gol.render()),
+    }
+    .alignment(Alignment::Center)
 }
 
 #[derive(PartialEq, Eq)]
@@ -113,29 +114,35 @@ fn process_key(key: Key) -> Return {
     Return::Continue
 }
 
-fn update(board: &mut Board, method: GOLMethod) -> Return {
-    let neighbor_function = match method {
-        GOLMethod::Normal => board::Board::next_state,
-        GOLMethod::VonNeumann => board::Board::next_state_neumann,
+fn update(game: &mut Game) -> Return {
+    match &mut game.board {
+        Boards::GolBoard(board) => match board.method {
+            GOLMethod::Normal => *board = board.next_state(),
+            GOLMethod::VonNeumann => *board = board.next_state_neumann(),
+        },
+        Boards::AntBoard(board) => *board = board.update(),
     };
-
-    *board = neighbor_function(board);
 
     Return::Continue
 }
 
-fn check_size(rect: &Rect, board: &Board) {
-    if (rect.width as usize) < board.width + 5 {
+fn check_size(rect: &Rect, game: &Game) {
+    let (width, height) = match &game.board {
+        boards::Boards::AntBoard(ant) => (ant.width, ant.height),
+        boards::Boards::GolBoard(gol) => (gol.width, gol.height),
+    };
+
+    if (rect.width as usize) < width + 5 {
         panic!(
             "Require width >= to the board width + 5, (board {}, terminal {})",
-            board.width, rect.width
+            width, rect.width
         );
     }
 
-    if (rect.height as usize) < board.height + 5 {
+    if (rect.height as usize) < height + 5 {
         panic!(
             "Require height >= to the board height + 5, (board {}, terminal {})",
-            board.height, rect.height
+            height, rect.height
         );
     }
 }

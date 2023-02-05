@@ -26,6 +26,8 @@ pub enum SubCommands {
     Random(Random),
     /// Use information from a file to populate a grid
     File(File),
+    /// Run Langton's Ant
+    Ant(Ant),
 }
 
 #[derive(clap::Args, Debug)]
@@ -42,7 +44,7 @@ pub struct Random {
     #[arg(long, short, value_enum, default_value_t = GOLMethod::Normal)]
     pub method: GOLMethod,
 
-    /// The time slept between the next state of the board (in milliseconds) WARNING: 0 does not work!
+    /// The time slept between updating the board (in milliseconds)
     #[arg(long, short, default_value_t = 200)]
     pub sleep_time: u64,
 }
@@ -56,9 +58,24 @@ pub struct File {
     #[arg(long, short, value_enum, default_value_t = GOLMethod::Normal)]
     pub method: GOLMethod,
 
-    /// The time slept between the next state of the board (in milliseconds) WARNING: 0 does not work!
+    /// The time slept between updating the board (in milliseconds)
     #[arg(long, short, default_value_t = 200)]
     pub sleep_time: u64,
 }
 
 // Add argument for Langtons' ant
+
+#[derive(clap::Args, Debug)]
+pub struct Ant {
+    /// Width of the grid
+    #[arg(default_value_t = DEFAULT_WIDTH)]
+    pub width: usize,
+
+    /// Height of the grid
+    #[arg(default_value_t = DEFAULT_HEIGHT)]
+    pub height: usize,
+
+    /// The time slept between updating the board (in milliseconds)
+    #[arg(long, short, default_value_t = 200)]
+    pub sleep_time: u64,
+}

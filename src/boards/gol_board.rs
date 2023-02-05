@@ -1,5 +1,7 @@
 use rand::prelude::*;
 
+use crate::args::GOLMethod;
+
 type StateArray = Vec<Vec<bool>>;
 
 #[derive(Debug)]
@@ -7,21 +9,23 @@ pub struct Board {
     state: StateArray,
     pub width: usize,
     pub height: usize,
+    pub method: GOLMethod
 }
 
 impl Board {
-    pub fn dead_state(width: usize, height: usize) -> Board {
+    pub fn dead_state(width: usize, height: usize, method: GOLMethod) -> Board {
         let state = vec![vec![false; width]; height];
 
         Board {
             state,
             width,
             height,
+            method
         }
     }
 
-    pub fn random_state(width: usize, height: usize) -> Board {
-        let mut board = Self::dead_state(width, height);
+    pub fn random_state(width: usize, height: usize, method: GOLMethod) -> Board {
+        let mut board = Self::dead_state(width, height, method);
 
         for i in board.state.iter_mut().flatten() {
             *i = random();
@@ -71,6 +75,7 @@ impl Board {
             state: new_state,
             width: self.width,
             height: self.height,
+            method: self.method
         }
     }
 
@@ -136,6 +141,7 @@ impl Board {
             state: new_state,
             width: self.width,
             height: self.height,
+            method: self.method
         }
     }
 
@@ -204,6 +210,7 @@ impl Board {
             state,
             width: file.lines().collect::<Vec<&str>>()[0].len(),
             height: file.lines().collect::<Vec<&str>>().len(),
+            method: GOLMethod::Normal
         })
     }
 }
@@ -219,6 +226,7 @@ mod tests {
             state: init_state,
             width: 5,
             height: 5,
+            method: crate::args::GOLMethod::Normal,
         };
 
         let expected_state = vec![vec![false; 5]; 5];
@@ -240,6 +248,7 @@ mod tests {
             state: init_state,
             width: 3,
             height: 3,
+            method: crate::args::GOLMethod::Normal,
         };
 
         let expected_state = vec![

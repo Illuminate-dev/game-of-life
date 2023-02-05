@@ -1,13 +1,11 @@
 pub mod args;
-pub mod board;
 pub mod commands;
+mod game;
 mod inputs;
 pub mod ui;
+pub mod boards;
 
 #[derive(Debug)]
-pub enum GOLError {}
-
-pub struct Config {
-    pub sleep_time: u64,
-    pub neighbor_method: args::GOLMethod,
+pub enum GOLError {
+    InvalidFile
 }

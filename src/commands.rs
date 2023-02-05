@@ -1,8 +1,10 @@
 use clap::Parser;
 
 use crate::args::{Cli, SubCommands};
+use crate::boards::gol_board;
+use crate::boards::{ant_board, Boards};
+use crate::game::Game;
 use crate::GOLError;
-use crate::{board, Config};
 
 pub fn run() -> Result<(), GOLError> {
     let args = Cli::parse();
@@ -10,27 +12,39 @@ pub fn run() -> Result<(), GOLError> {
     match args.command {
         SubCommands::Random(args) => random(args),
         SubCommands::File(args) => from_file(args),
+        SubCommands::Ant(args) => ant(args),
     }
 }
 
 fn random(args: crate::args::Random) -> Result<(), GOLError> {
-    let mut board = board::Board::random_state(args.width, args.height);
+    let mut board = gol_board::Board::random_state(args.width, args.height, args.method);
 
-    let config = Config {
-        sleep_time: args.sleep_time,
-        neighbor_method: args.method,
+    let mut game = Game {
+        board: Boards::GolBoard(board),
     };
 
-    crate::ui::start_ui(&mut board, config)
+    crate::ui::start_ui(&mut game, args.sleep_time)
 }
 
 fn from_file(args: crate::args::File) -> Result<(), GOLError> {
-    let mut board = board::Board::load_from_file(args.filepath.to_str().unwrap()).unwrap();
-
-    let config = Config {
-        sleep_time: args.sleep_time,
-        neighbor_method: args.method,
+    let mut board = match gol_board::Board::load_from_file(args.filepath.to_str().unwrap()) {
+        Ok(brd) => brd,
+        Err(_) => return Err(GOLError::InvalidFile),
     };
 
-    crate::ui::start_ui(&mut board, config)
+    let mut game = Game {
+        board: Boards::GolBoard(board),
+    };
+
+    crate::ui::start_ui(&mut game, args.sleep_time)
+}
+
+fn ant(args: crate::args::Ant) -> Result<(), GOLError> {
+    let mut board = ant_board::Board::create_board(args.width, args.height);
+
+    let mut game = Game {
+        board: Boards::AntBoard(board),
+    };
+
+    crate::ui::start_ui(&mut game, args.sleep_time)
 }
