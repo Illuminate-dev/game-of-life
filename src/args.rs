@@ -77,5 +77,9 @@ pub struct Ant {
 
     /// The time slept between updating the board (in milliseconds)
     #[arg(long, short, default_value_t = 200)]
-    pub sleep_time: u64,
+    pub interval: u64,
+
+    /// The step to start at
+    #[arg(long, short, default_value_t = 0)]
+    pub start: u64,
 }

@@ -1,7 +1,6 @@
 use std::{io, time::Duration};
 
 use crossterm::{
-    event::{DisableMouseCapture, EnableMouseCapture},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -25,7 +24,7 @@ use crate::GOLError;
 pub fn start_ui(game: &mut Game, sleep_time: u64) -> Result<(), GOLError> {
     enable_raw_mode().unwrap();
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap();
+    execute!(stdout, EnterAlternateScreen).unwrap();
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).unwrap();
 
@@ -47,12 +46,7 @@ pub fn start_ui(game: &mut Game, sleep_time: u64) -> Result<(), GOLError> {
 
     disable_raw_mode().unwrap();
 
-    execute!(
-        terminal.backend_mut(),
-        LeaveAlternateScreen,
-        DisableMouseCapture
-    )
-    .unwrap();
+    execute!(terminal.backend_mut(), LeaveAlternateScreen).unwrap();
 
     terminal.show_cursor().unwrap();
 

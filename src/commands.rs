@@ -17,7 +17,7 @@ pub fn run() -> Result<(), GOLError> {
 }
 
 fn random(args: crate::args::Random) -> Result<(), GOLError> {
-    let mut board = gol_board::Board::random_state(args.width, args.height, args.method);
+    let board = gol_board::Board::random_state(args.width, args.height, args.method);
 
     let mut game = Game {
         board: Boards::GolBoard(board),
@@ -27,7 +27,7 @@ fn random(args: crate::args::Random) -> Result<(), GOLError> {
 }
 
 fn from_file(args: crate::args::File) -> Result<(), GOLError> {
-    let mut board = match gol_board::Board::load_from_file(args.filepath.to_str().unwrap()) {
+    let board = match gol_board::Board::load_from_file(args.filepath.to_str().unwrap()) {
         Ok(brd) => brd,
         Err(_) => return Err(GOLError::InvalidFile),
     };
@@ -40,11 +40,18 @@ fn from_file(args: crate::args::File) -> Result<(), GOLError> {
 }
 
 fn ant(args: crate::args::Ant) -> Result<(), GOLError> {
-    let mut board = ant_board::Board::create_board(args.width, args.height);
+    let board = ant_board::Board::create_board(args.width, args.height);
 
     let mut game = Game {
         board: Boards::AntBoard(board),
     };
 
-    crate::ui::start_ui(&mut game, args.sleep_time)
+    for _ in 0..args.start {
+        match &mut game.board {
+            Boards::AntBoard(x) => *x = x.update(),
+            _ => return Err(GOLError::UnknownError),
+        }
+    }
+
+    crate::ui::start_ui(&mut game, args.interval)
 }

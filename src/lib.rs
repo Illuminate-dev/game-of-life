@@ -7,5 +7,6 @@ pub mod boards;
 
 #[derive(Debug)]
 pub enum GOLError {
-    InvalidFile
+    InvalidFile,
+    UnknownError
 }
