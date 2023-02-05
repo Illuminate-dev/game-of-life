@@ -2,6 +2,9 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
 
+const DEFAULT_WIDTH: usize = 105;
+const DEFAULT_HEIGHT: usize = 23;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about=None)]
 pub struct Cli {
@@ -28,11 +31,11 @@ pub enum SubCommands {
 #[derive(clap::Args, Debug)]
 pub struct Random {
     /// Width of the grid
-    #[arg(default_value_t = 50)]
+    #[arg(default_value_t = DEFAULT_WIDTH)]
     pub width: usize,
 
     /// Height of the grid
-    #[arg(default_value_t = 50)]
+    #[arg(default_value_t = DEFAULT_HEIGHT)]
     pub height: usize,
 
     /// The method used to get number of neighbors

@@ -5,6 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "gol"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.1.4", features = ["derive"] }
 crossterm = "0.26.0"

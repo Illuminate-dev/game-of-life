@@ -107,7 +107,7 @@ pub enum Return {
 }
 
 fn process_key(key: Key) -> Return {
-    if key == Key::Ctrl('c') {
+    if key == Key::Ctrl('c') || key == Key::Char('q') {
         return Return::Exit;
     }
     Return::Continue
@@ -127,15 +127,15 @@ fn update(board: &mut Board, method: NeighborMethod) -> Return {
 fn check_size(rect: &Rect, board: &Board) {
     if (rect.width as usize) < board.width + 5 {
         panic!(
-            "Require width >= to the board width + 5, (got {}, needed {})",
-            rect.width, board.width
+            "Require width >= to the board width + 5, (board {}, terminal {})",
+            board.width, rect.width
         );
     }
 
     if (rect.height as usize) < board.height + 5 {
         panic!(
-            "Require height >= to the board height + 5, (got {}, needed {})",
-            rect.height, board.height
+            "Require height >= to the board height + 5, (board {}, terminal {})",
+            board.height, rect.height
         );
     }
 }
