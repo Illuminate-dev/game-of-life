@@ -18,6 +18,8 @@ pub enum GOLMethod {
     Normal,
     /// Von Neumann's method: GOL with neighbors being 4 cardinals extended once
     VonNeumann,
+    /// Day and Night: B3678/S34678
+    Dan,
 }
 
 #[derive(Subcommand, Debug)]

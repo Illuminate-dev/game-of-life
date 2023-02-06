@@ -113,6 +113,7 @@ fn update(game: &mut Game) -> Return {
         Boards::GolBoard(board) => match board.method {
             GOLMethod::Normal => *board = board.next_state(),
             GOLMethod::VonNeumann => *board = board.next_state_neumann(),
+            GOLMethod::Dan => *board = board.next_state_dan(),
         },
         Boards::AntBoard(board) => *board = board.update(),
     };

@@ -59,10 +59,6 @@ impl Board {
         } else {
             new_board.ant.2.rotate_left();
         }
-        let left = self.ant.0 != 0;
-        let right = self.ant.0 < self.width - 1;
-        let up = self.ant.1 != 0;
-        let down = self.ant.1 < self.height - 1;
 
         match new_board.ant.2 {
             Direction::Up => {

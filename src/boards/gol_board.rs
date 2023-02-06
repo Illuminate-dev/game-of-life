@@ -9,7 +9,7 @@ pub struct Board {
     state: StateArray,
     pub width: usize,
     pub height: usize,
-    pub method: GOLMethod
+    pub method: GOLMethod,
 }
 
 impl Board {
@@ -20,7 +20,7 @@ impl Board {
             state,
             width,
             height,
-            method
+            method,
         }
     }
 
@@ -75,7 +75,7 @@ impl Board {
             state: new_state,
             width: self.width,
             height: self.height,
-            method: self.method
+            method: self.method,
         }
     }
 
@@ -141,7 +141,7 @@ impl Board {
             state: new_state,
             width: self.width,
             height: self.height,
-            method: self.method
+            method: self.method,
         }
     }
 
@@ -192,6 +192,33 @@ impl Board {
         counter
     }
 
+    pub fn next_state_dan(&self) -> Board {
+        let mut new_state = self.state.clone();
+        for (y, line) in self.state.iter().enumerate() {
+            for (x, cell) in line.iter().enumerate() {
+                let neighbors = self.calculate_num_neighbors(x, y);
+                if *cell {
+                    match neighbors {
+                        0 | 1 | 2 | 5 => new_state[y][x] = false,
+                        _ => {}
+                    }
+                } else {
+                    match neighbors {
+                        3 | 6 | 7 | 8 => new_state[y][x] = true,
+                        _ => {}
+                    }
+                }
+            }
+        }
+
+        Board {
+            state: new_state,
+            width: self.width,
+            height: self.height,
+            method: self.method,
+        }
+    }
+
     pub fn load_from_file(filename: &str) -> std::io::Result<Board> {
         let file = std::fs::read_to_string(filename)?;
         let state = file.lines().fold(Vec::new(), |mut vec, line: &str| {
@@ -210,7 +237,7 @@ impl Board {
             state,
             width: file.lines().collect::<Vec<&str>>()[0].len(),
             height: file.lines().collect::<Vec<&str>>().len(),
-            method: GOLMethod::Normal
+            method: GOLMethod::Normal,
         })
     }
 }
